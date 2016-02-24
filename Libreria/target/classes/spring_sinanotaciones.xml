@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+    <!-- Transacción-->
+     <tx:advice id="txAdvice" transaction-manager="txManager">
+     	<tx:attributes>
+     		<tx:method name="altaLibro" propagation="REQUIRED" isolation="SERIALIZABLE" rollback-for="Exception"/>
+     		<tx:method name="eliminarLibro" propagation="REQUIRED" isolation="SERIALIZABLE" rollback-for="Exception"/>
+     		<tx:method name="consultarISBN" propagation="REQUIRED" isolation="SERIALIZABLE" rollback-for="Exception"/>
+     		<tx:method name="consultarTitulo" propagation="REQUIRED" isolation="SERIALIZABLE" rollback-for="Exception"/>
+     		<tx:method name="modificarPrecio" propagation="REQUIRED" isolation="SERIALIZABLE" rollback-for="Exception"/>
+     		<tx:method name="*" propagation="SUPPORTS" read-only="true" />
+     	</tx:attributes>
+     </tx:advice>
+     <!-- Transacción - AOP-->
+      <aop:config>
+      	<aop:advisor pointcut="execution(* *..LibrosDAO.*(..))" advice-ref="txAdvice"/>
+      </aop:config>
+     
+    <!-- Beans -->
+	<bean id="mapaLibro" class="app.persistencia.MapaLibro" />
+	
+	<bean id="librosDAO" class="app.persistencia.LibrosDAO" >
+		<property name="plantilla" ref="miTemplate" />
+		<property name="mapalibro" ref="mapaLibro" />
+	</bean>
+	
+	<bean id="gestionLibreria" class="app.negocio.GestionLibreria">
+			<property name="ilibrosdao" ref="librosDAO"/>
+	</bean>
+	
+	<!-- Bean con función que interceptará a GestionLibreria.altaLibro -->
+	<bean id="interceptor" class="app.utilidades.Interceptor" />
+	<!-- AOP -->
+	<aop:config>
+    	<aop:pointcut id="confirmacionAltaLibro" expression="execution(* app.negocio.GestionLibreria.altaLibro(..))" />  
+    	<aop:aspect ref="interceptor">
+        	<aop:after-returning method="interceptarAltaLibro" pointcut-ref="confirmacionAltaLibro"/>
+		</aop:aspect>
+	</aop:config>
+	
+</beans>

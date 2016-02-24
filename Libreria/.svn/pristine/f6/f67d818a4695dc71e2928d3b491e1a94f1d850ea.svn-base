@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+	<!-- Fichero de propiedades con datos de conexión DB -->
+	<bean id="mappings" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     	<property name="location" value="classpath:conexion.properties"/>
+    </bean>
+     
+     <!-- DataSouce con datos de conexión del fichero de propiedades -->
+    <bean id="miDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" lazy-init="true">
+     	<property name="driverClassName" value="${driver}"/>
+     	<property name="url" value="${url}"/>
+     	<property name="username" value="${user}"/>
+     	<property name="password" value="${pw}"/>
+    </bean>
+	
+	<!-- Template obligatorio para JDBC -->
+    <bean id="miTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+    	<constructor-arg ref="miDataSource" />
+    </bean>
+    
+    <!-- Template TX Manager -->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="miDataSource"/>
+    </bean>
+     
+    <!-- Manager TX -->
+    <tx:annotation-driven transaction-manager="txManager" />
+     
+     <!-- Leyendo otro fichero - uno con anotaciones y otro sin ellas -->
+    <import resource="springconanotaciones.xml" />
+<!--     <import resource="spring_sinanotaciones.xml" /> -->
+    
+</beans>
