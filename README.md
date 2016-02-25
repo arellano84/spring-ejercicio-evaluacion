@@ -2,16 +2,6 @@
 Proyecto de Evaluación Modulo Spring
 
 
-El siguiente ejercicio será el determinante para la evaluación del modulo.
-
-Se puntuará teniendo en cuenta los siguientes aspectos:
-
-	Evidentemente el programa debe funcionar
-	Se debe ceñir a los requisitos establecidos
-	El código debe ser ordenado y tabulado para facilitar la lectura
-	Se deben adjuntar comentarios en el código. Explicando el uso de variables y algoritmos utilizados.
-
-	
 ENUNCIADO EJERCICIO EVALUACION
 
 1.- Crear un proyecto Java llamado Libreria.
